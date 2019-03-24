@@ -17,12 +17,18 @@ public class Furniture {
     private String name;
 
     @NotNull
-    @Size(min = 3, message = "Desctiption must not be empty!")
+    @Size(min = 3, message = "Description must not be empty!")
     private String description;
+
+    @NotNull
+    private float price;
 
     @OneToMany
     @JoinColumn(name = "furniture_id")
     private List<Orders> orders = new ArrayList<>();
+
+    @ManyToOne
+    private FurnitureType furnitureType;
 
     public Furniture(String name, String description) {
         this.name = name;
@@ -45,11 +51,27 @@ public class Furniture {
         this.name = name;
     }
 
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public FurnitureType getFurnitureType() {
+        return furnitureType;
+    }
+
+    public void setFurnitureType(FurnitureType furnitureType) {
+        this.furnitureType = furnitureType;
     }
 }

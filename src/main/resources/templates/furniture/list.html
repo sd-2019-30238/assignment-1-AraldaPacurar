@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head"></head>
+
+<body class="container">
+
+<h1 th:text="${title}">Furniture</h1>
+<p></p>
+
+<nav th:replace="fragments :: navigation"></nav>
+
+<p th:unless="${furnitures} and ${furnitures.size()}">The furniture list is currently empty!</p>
+
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price</th>
+
+    <tr th:each="furniture : ${furnitures}">
+        <td th:text="${furniture.name}"></td>
+        <td th:text="${furniture.description}"></td>
+        <td th:text="${furniture.price}"></td>
+    </tr>
+</table>
+
+</body>
+
+</html>

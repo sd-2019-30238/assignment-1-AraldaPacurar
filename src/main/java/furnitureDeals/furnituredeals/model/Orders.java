@@ -30,12 +30,12 @@ public class Orders {
         return id;
     }
 
-    public String getFoodName() {
+    public String getFurnitureName() {
         return furnitureName;
     }
 
-    public void setFoodName(String foodName) {
-        this.furnitureName = foodName;
+    public void setFurnitureName(String furnitureName) {
+        this.furnitureName = furnitureName;
     }
 
     public String getUsername() {
@@ -54,11 +54,11 @@ public class Orders {
         this.user = user;
     }
 
-    public Furniture getFood() {
+    public Furniture getFurniture() {
         return furniture;
     }
 
-    public void setFood(Furniture food) {
-        this.furniture = food;
+    public void setFurniture(Furniture furniture) {
+        this.furniture = furniture;
     }
 }
