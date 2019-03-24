@@ -37,6 +37,16 @@ public class OrderBuilder {
         return this;
     }
 
+    public OrderBuilder setStatus(String status){
+        order.setStatus(status);
+        return this;
+    }
+
+    public OrderBuilder setFeedback(String feedback){
+        order.setFeedback(feedback);
+        return this;
+    }
+
     public Orders build(){
 
         return order;

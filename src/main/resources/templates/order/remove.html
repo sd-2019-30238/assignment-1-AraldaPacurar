@@ -9,12 +9,14 @@
 
 <nav th:replace="fragments :: navigation"></nav>
 
+<p th:unless="${orders} and ${orders.size()}">There are no pending orders!</p>
+
 <form method="post">
 
     <div th:each="order : ${orders}" class="checkbox">
 
         <input type="checkbox" name="orderIds" th:value="${order.id}" th:id="${order.id}" />
-        <label th:for="${order.id}" th:text="'Order ' + ${order.id} + ' ---> ' + ${order.furnitureName}"></label>
+        <label th:for="${order.id}" th:text="'Order ' + ${order.id} + ' ---> ' + ${order.furnitureName} + ' ---> ' + ${order.status}"></label>
 
     </div>
     <p></p>

@@ -21,7 +21,10 @@ public class Furniture {
     private String description;
 
     @NotNull
-    private float price;
+    private int price;
+
+    @NotNull
+    private int originalPrice;
 
     @OneToMany
     @JoinColumn(name = "furniture_id")
@@ -51,12 +54,20 @@ public class Furniture {
         this.name = name;
     }
 
-    public float getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(int price) {
         this.price = price;
+    }
+
+    public int getOriginalPrice() {
+        return originalPrice;
+    }
+
+    public void setOriginalPrice(int originalPrice) {
+        this.originalPrice = originalPrice;
     }
 
     public String getDescription() {

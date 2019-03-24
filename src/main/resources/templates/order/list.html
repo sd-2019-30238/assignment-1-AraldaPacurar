@@ -16,12 +16,16 @@
         <th>Order Id</th>
         <th>Username</th>
         <th>Ordered Furniture</th>
+        <th>Order Status</th>
+        <th>Feedback</th>
     </tr>
 
     <tr th:each="order : ${orders}">
         <td th:text="${order.id}"></td>
         <td th:text="${order.user.username}"></td>
         <td th:text="${order.furniture.name}"></td>
+        <td th:text="${order.status}"></td>
+        <td th:text="${order.feedback}"></td>
     </tr>
 </table>
 
