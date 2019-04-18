@@ -1,6 +1,13 @@
 package furnitureDeals.furnituredeals.business.factory;
 
-public abstract class DiscountCreator {
+public class DiscountCreator {
 
-    public abstract Discount createDiscount();
+    public Discount createDiscount(String discountType){
+
+        if(discountType.equals("10%")){
+            return new DiscountTen();
+        }
+
+        return new DiscountTwenty();
+    }
 }

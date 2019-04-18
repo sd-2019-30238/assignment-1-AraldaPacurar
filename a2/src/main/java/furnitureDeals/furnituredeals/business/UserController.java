@@ -2,6 +2,7 @@ package furnitureDeals.furnituredeals.business;
 
 import furnitureDeals.furnituredeals.business.service.PasswordEncoder;
 import furnitureDeals.furnituredeals.business.service.UserValidator;
+import furnitureDeals.furnituredeals.dao.NotificationDAO;
 import furnitureDeals.furnituredeals.model.Rights;
 import furnitureDeals.furnituredeals.model.Role;
 import furnitureDeals.furnituredeals.model.User;
@@ -30,6 +31,9 @@ public class UserController {
 
     @Autowired
     private RightsDAO rightsDao;
+
+    @Autowired
+    private NotificationDAO notificationDao;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String displayAuthenticationForm(Model model){
@@ -154,6 +158,16 @@ public class UserController {
         model.addAttribute("userId", userId);
 
         return "user/list";
+    }
+
+    @RequestMapping(value = "/listNotifications/{userId}", method = RequestMethod.GET)
+    public String listNotifications(Model model, @PathVariable int userId){
+
+        model.addAttribute("title", "View Notifications");
+        model.addAttribute("notifications", notificationDao.findByUserId(userId));
+        model.addAttribute("userId", userId);
+
+        return "user/listNotifications";
     }
 
     @RequestMapping(value = "remove/{userId}", method = RequestMethod.GET)

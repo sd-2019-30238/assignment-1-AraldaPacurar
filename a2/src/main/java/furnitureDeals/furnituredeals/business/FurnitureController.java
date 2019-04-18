@@ -2,8 +2,6 @@ package furnitureDeals.furnituredeals.business;
 
 import furnitureDeals.furnituredeals.business.factory.Discount;
 import furnitureDeals.furnituredeals.business.factory.DiscountCreator;
-import furnitureDeals.furnituredeals.business.factory.DiscountTenCreator;
-import furnitureDeals.furnituredeals.business.factory.DiscountTwentyCreator;
 import furnitureDeals.furnituredeals.dao.*;
 import furnitureDeals.furnituredeals.model.*;
 import furnitureDeals.furnituredeals.model.forms.FilterForm;
@@ -240,17 +238,7 @@ public class  FurnitureController {
                 furniture = optionalFurniture.get();
             }
 
-            DiscountCreator discountCreator = null;
-            Discount myDiscount = null;
-
-            if (discount.equals("10%")) {
-
-                discountCreator = new DiscountTenCreator();
-            } else if (discount.equals("20%")) {
-
-                discountCreator = new DiscountTwentyCreator();
-            }
-            myDiscount = discountCreator.createDiscount();
+            Discount myDiscount = new DiscountCreator().createDiscount(discount);
 
             if(action.equals("Add Discount")) {
 
