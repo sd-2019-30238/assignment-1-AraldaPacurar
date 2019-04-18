@@ -1,5 +1,7 @@
 package furnitureDeals.furnituredeals.model;
 
+import furnitureDeals.furnituredeals.model.observer.MyObserver;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -7,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class User {
+public class User implements MyObserver{
 
     @Id
     @GeneratedValue
@@ -31,9 +33,13 @@ public class User {
     @ManyToOne
     private Role role;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.ALL})
     @JoinColumn(name = "user_id")
     private List<Orders> orders = new ArrayList<>();
+
+    @OneToMany(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "user_id")
+    private List<Notification> notifications = new ArrayList<>();
 
     public User(){
 
@@ -81,5 +87,11 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @Override
+    public void update(Notification notification) {
+
+        notifications.add(notification);
     }
 }

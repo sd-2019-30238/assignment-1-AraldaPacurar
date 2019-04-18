@@ -1,12 +1,14 @@
 package furnitureDeals.furnituredeals.model;
 
-import org.springframework.beans.factory.annotation.Value;
+import furnitureDeals.furnituredeals.model.observer.MyObservable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-public class Orders {
+public class Orders extends MyObservable {
 
     @Id
     @GeneratedValue
@@ -29,6 +31,10 @@ public class Orders {
 
     @ManyToOne
     private Furniture furniture;
+
+    @OneToMany(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "order_id")
+    private List<Notification> notifications = new ArrayList<>();
 
     public Orders(){
 

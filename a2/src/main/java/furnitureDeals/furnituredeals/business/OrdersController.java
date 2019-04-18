@@ -1,11 +1,9 @@
 package furnitureDeals.furnituredeals.business;
 
+import furnitureDeals.furnituredeals.dao.*;
 import furnitureDeals.furnituredeals.model.*;
+import furnitureDeals.furnituredeals.model.builder.NotificationBuilder;
 import furnitureDeals.furnituredeals.model.builder.OrderBuilder;
-import furnitureDeals.furnituredeals.dao.FurnitureDAO;
-import furnitureDeals.furnituredeals.dao.OrdersDAO;
-import furnitureDeals.furnituredeals.dao.RightsDAO;
-import furnitureDeals.furnituredeals.dao.UserDAO;
 import furnitureDeals.furnituredeals.model.forms.FeedbackForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +30,9 @@ public class OrdersController {
 
     @Autowired
     private RightsDAO rightsDao;
+
+    @Autowired
+    private NotificationDAO notificationDao;
 
     @RequestMapping(value = "list/{userId}", method =  RequestMethod.GET)
     public String listOrders(Model model, @PathVariable int userId){
@@ -132,9 +133,10 @@ public class OrdersController {
     @RequestMapping(value = "add/{userId}", method = RequestMethod.POST)
     public String processAddOrder(@RequestParam int[] furnitureIds, @PathVariable int userId, Model model){
 
+        User user = null;
+
         for(int furnitureId : furnitureIds){
 
-            User user = null;
             Optional<User> optionalUser = userDao.findById(userId);
             if(optionalUser.isPresent()){
 
@@ -157,6 +159,7 @@ public class OrdersController {
                     .setFeedback("No Feedback")
                     .build();
 
+            order.registerObserver(user);
             ordersDao.save(order);
         }
 
@@ -218,14 +221,33 @@ public class OrdersController {
                 order = optionalOrder.get();
             }
 
+            User user = null;
+            Optional<User> optionalUser = userDao.findById(order.getUser().getId());
+            if(optionalUser.isPresent()) {
+
+                user = optionalUser.get();
+            }
+
+            String notificationMessage = "No notifications";
+
             if(order.getStatus().equals("Pending")){
                 order.setStatus("Shipping");
+                notificationMessage = "Order number " + order.getId() + " has been sent!";
             }
             else if(order.getStatus().equals("Shipping")){
                 order.setStatus("Payed");
+                notificationMessage = "Order number " + order.getId() + " has arrived!";
             }
 
+            Notification notification = new NotificationBuilder()
+                    .setUser(user)
+                    .setNotification(notificationMessage)
+                    .build();
+
+            order.notifyObserver(user, notification);
+
             ordersDao.save(order);
+            notificationDao.save(notification);
         }
 
         return "redirect:/order/list/" + userId;
