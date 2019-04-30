@@ -1,5 +1,7 @@
-package furnitureDeals.furnituredeals.business;
+package furnitureDeals.furnituredeals.writeM;
 
+import furnitureDeals.furnituredeals.business.mediator.ConcreteMediator;
+import furnitureDeals.furnituredeals.business.mediator.Mediator;
 import furnitureDeals.furnituredeals.dao.FurnitureDAO;
 import furnitureDeals.furnituredeals.dao.OrdersDAO;
 import furnitureDeals.furnituredeals.dao.ShoppingCartDAO;
@@ -21,7 +23,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("cart")
-public class ShoppingCartController {
+public class ShoppingCartControllerPost {
 
     @Autowired
     private ShoppingCartDAO shoppingCartDao;
@@ -35,23 +37,7 @@ public class ShoppingCartController {
     @Autowired
     private UserDAO userDao;
 
-    @RequestMapping(value = "list/{userId}", method = RequestMethod.GET)
-    public String listItems(Model model, @PathVariable int userId){
-
-        List<ShoppingCart> shoppingCarts = shoppingCartDao.findByUserId(userId);
-        String deals = "No deals";
-
-        if(shoppingCarts.size() > 0){
-            deals = shoppingCarts.get(0).getDeals();
-        }
-
-        model.addAttribute("title", "Items");
-        model.addAttribute("userId", userId);
-        model.addAttribute("shoppingCart", shoppingCarts);
-        model.addAttribute("deals", deals);
-
-        return "cart/list";
-    }
+    private Mediator m = new ConcreteMediator();
 
     @RequestMapping(value = "list/{userId}", method = RequestMethod.POST)
     public String processListItems(Model model, @RequestParam String deal, @PathVariable int userId){
@@ -82,17 +68,7 @@ public class ShoppingCartController {
         model.addAttribute("shoppingCart", shoppingCarts);
         model.addAttribute("deals", deals);
 
-        return "cart/list";
-    }
-
-    @RequestMapping(value = "add/{userId}", method  = RequestMethod.GET)
-    public String displayAddOrder(Model model, @PathVariable int userId){
-
-        model.addAttribute("title", "Shopping Cart");
-        model.addAttribute("userId", userId);
-        model.addAttribute("shoppingCart", shoppingCartDao.findByUserId(userId));
-
-        return "cart/add";
+        return m.notifyMediator(this, "listCart");
     }
 
     @RequestMapping(value = "add/{userId}", method = RequestMethod.POST)
@@ -135,17 +111,7 @@ public class ShoppingCartController {
         model.addAttribute("messages", "Your order has been placed successfully!");
         model.addAttribute("userId", userId);
 
-        return "message";
-    }
-
-    @RequestMapping(value = "remove/{userId}", method  = RequestMethod.GET)
-    public String displayRemoveItems(Model model, @PathVariable int userId){
-
-        model.addAttribute("title", "Shopping Cart");
-        model.addAttribute("userId", userId);
-        model.addAttribute("shoppingCart", shoppingCartDao.findByUserId(userId));
-
-        return "cart/remove";
+        return m.notifyMediator(this, "processAddOrder");
     }
 
     @RequestMapping(value = "remove/{userId}", method = RequestMethod.POST)
@@ -167,6 +133,6 @@ public class ShoppingCartController {
         model.addAttribute("messages", "The selected items have been successfully removed!");
         model.addAttribute("userId", userId);
 
-        return "message";
+        return m.notifyMediator(this, "processRemoveFromCart");
     }
 }

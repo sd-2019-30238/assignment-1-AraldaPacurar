@@ -1,24 +1,21 @@
-package furnitureDeals.furnituredeals.business;
+package furnitureDeals.furnituredeals.readM;
 
-import furnitureDeals.furnituredeals.business.factory.Discount;
-import furnitureDeals.furnituredeals.business.factory.DiscountCreator;
+import furnitureDeals.furnituredeals.business.mediator.ConcreteMediator;
+import furnitureDeals.furnituredeals.business.mediator.Mediator;
 import furnitureDeals.furnituredeals.dao.*;
 import furnitureDeals.furnituredeals.model.*;
 import furnitureDeals.furnituredeals.model.forms.FilterForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("furniture")
-public class  FurnitureController {
+public class FurnitureControllerGet {
 
     @Autowired
     private FurnitureDAO furnitureDao;
@@ -34,6 +31,8 @@ public class  FurnitureController {
 
     @Autowired
     private FurnitureTypeDAO furnitureTypeDao;
+
+    private Mediator m = new ConcreteMediator();
 
     @RequestMapping(value = "list/{userId}", method = RequestMethod.GET)
     public String listFurniture(Model model, @PathVariable int userId){
@@ -56,7 +55,7 @@ public class  FurnitureController {
             model.addAttribute("messages", "You do not have privileges to perform this action!");
             model.addAttribute("userId", userId);
 
-            return "message";
+            return m.notifyMediator(this, "error");
         }
 
         model.addAttribute("title", "Available Furniture");
@@ -64,46 +63,7 @@ public class  FurnitureController {
         model.addAttribute("furnitures", furnitureDao.findAll());
         model.addAttribute(new FilterForm());
 
-        return "furniture/list";
-    }
-
-    @RequestMapping(value = "list/{userId}", method = RequestMethod.POST)
-    public String processListFurniture(Model model, @PathVariable int userId, @ModelAttribute @Valid FilterForm filter){
-
-        List<Furniture> filteredFurniture = new ArrayList<>();
-        filteredFurniture = furnitureDao.findByName(filter.getFilter());
-
-        if(filteredFurniture.isEmpty()){
-
-            List<FurnitureType> furnitureType = furnitureTypeDao.findByName(filter.getFilter());
-            if(!furnitureType.isEmpty()){
-
-                filteredFurniture = furnitureDao.findByFurnitureTypeId(furnitureType.get(0).getId());
-            }
-
-            if(filteredFurniture.isEmpty()){
-
-                try {
-                    filteredFurniture = furnitureDao.findByPrice(Integer.parseInt(filter.getFilter()));
-                }
-                catch (NumberFormatException e){
-
-                    model.addAttribute("title", "Available Furniture");
-                    model.addAttribute("userId", userId);
-                    model.addAttribute("furnitures", filteredFurniture);
-                    model.addAttribute(new FilterForm());
-
-                    return "furniture/list";
-                }
-            }
-        }
-
-        model.addAttribute("title", "Available Furniture");
-        model.addAttribute("userId", userId);
-        model.addAttribute("furnitures", filteredFurniture);
-        model.addAttribute(new FilterForm());
-
-        return "furniture/list";
+        return m.notifyMediator(this, "listFurniture");
     }
 
     @RequestMapping(value = "add/{userId}", method = RequestMethod.GET)
@@ -123,11 +83,12 @@ public class  FurnitureController {
 
         if(!myRole.getRights().contains(requiredRight)){
 
+
             model.addAttribute("title", "Invalid request!");
             model.addAttribute("messages", "You do not have privileges to perform this operation!");
             model.addAttribute("userId", userId);
 
-            return "message";
+            return m.notifyMediator(this, "error");
         }
 
         model.addAttribute("title", "Add Furniture");
@@ -135,23 +96,7 @@ public class  FurnitureController {
         model.addAttribute("furnitureTypes", furnitureTypeDao.findAll());
         model.addAttribute(new Furniture());
 
-        return "furniture/add";
-    }
-
-    @RequestMapping(value = "add/{userId}", method = RequestMethod.POST)
-    public String processAddFurniture(@ModelAttribute @Valid Furniture newFurniture, Errors errors, @PathVariable int userId, Model model){
-
-        if(errors.hasErrors()){
-
-            model.addAttribute("title", "Add Furniture");
-            return "furniture/add";
-        }
-
-        newFurniture.setOriginalPrice(newFurniture.getPrice());
-
-        furnitureDao.save(newFurniture);
-
-        return "redirect:/furniture/list/" + userId;
+        return m.notifyMediator(this, "addFurniture");
     }
 
     @RequestMapping(value = "remove/{userId}", method = RequestMethod.GET)
@@ -175,25 +120,14 @@ public class  FurnitureController {
             model.addAttribute("messages", "You do not have privileges to perform this action!");
             model.addAttribute("userId", userId);
 
-            return "message";
+            return m.notifyMediator(this, "error");
         }
 
         model.addAttribute("title", "Remove Furniture");
         model.addAttribute("userId", userId);
         model.addAttribute("furnitures", furnitureDao.findAll());
 
-        return "furniture/remove";
-    }
-
-    @RequestMapping(value = "remove/{userId}", method = RequestMethod.POST)
-    public String processRemoveFurniture(@RequestParam int[] furnitureIds, @PathVariable int userId){
-
-        for(int furnitureId : furnitureIds){
-
-            furnitureDao.deleteById(furnitureId);
-        }
-
-        return "redirect:/furniture/list/" + userId;
+        return m.notifyMediator(this, "removeFurniture");
     }
 
     @RequestMapping(value = "discount/{userId}", method = RequestMethod.GET)
@@ -217,43 +151,13 @@ public class  FurnitureController {
             model.addAttribute("messages", "You do not have privileges to perform this action!");
             model.addAttribute("userId", userId);
 
-            return "message";
+            return m.notifyMediator(this, "error");
         }
 
         model.addAttribute("title", "Manage Discounts");
         model.addAttribute("furnitures", furnitureDao.findAll());
         model.addAttribute("userId", userId);
 
-        return "furniture/discount";
-    }
-
-    @RequestMapping(value = "discount/{userId}", method = RequestMethod.POST)
-    public String processAddDiscount(@RequestParam int[] furnitureIds, @RequestParam String action, @RequestParam String discount, @PathVariable int userId){
-
-        for(int furnitureId: furnitureIds){
-
-            Optional<Furniture> optionalFurniture = furnitureDao.findById(furnitureId);
-            Furniture furniture = null;
-            if(optionalFurniture.isPresent()){
-                furniture = optionalFurniture.get();
-            }
-
-            Discount myDiscount = new DiscountCreator().createDiscount(discount);
-
-            if(action.equals("Add Discount")) {
-
-                furniture.setPrice(myDiscount.addDiscount(furniture.getPrice()));
-                furniture.setDescription(myDiscount.toString());
-            }
-            else if(action.equals("Remove Discount")){
-
-                furniture.setPrice(myDiscount.removeDiscount(furniture.getPrice(), furniture.getOriginalPrice()));
-                furniture.setDescription("No discount");
-            }
-
-            furnitureDao.save(furniture);
-        }
-
-        return "redirect:/furniture/list/" + userId;
+        return m.notifyMediator(this, "addDiscount");
     }
 }

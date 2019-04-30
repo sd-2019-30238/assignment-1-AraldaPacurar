@@ -1,5 +1,7 @@
-package furnitureDeals.furnituredeals.business;
+package furnitureDeals.furnituredeals.readM;
 
+import furnitureDeals.furnituredeals.business.mediator.ConcreteMediator;
+import furnitureDeals.furnituredeals.business.mediator.Mediator;
 import furnitureDeals.furnituredeals.model.Rights;
 import furnitureDeals.furnituredeals.model.Role;
 import furnitureDeals.furnituredeals.model.User;
@@ -10,19 +12,16 @@ import furnitureDeals.furnituredeals.dao.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("role")
-public class RoleController {
+public class RoleControllerGet {
 
     @Autowired
     private RoleDAO roleDao;
@@ -32,6 +31,8 @@ public class RoleController {
 
     @Autowired
     private UserDAO userDao;
+
+    private Mediator m = new ConcreteMediator();
 
     @RequestMapping(value = "list/{userId}", method = RequestMethod.GET)
     public String listRoles(Model model, @PathVariable int userId){
@@ -54,14 +55,14 @@ public class RoleController {
             model.addAttribute("messages", "You do not have permission to perform that action!");
             model.addAttribute("userId", userId);
 
-            return "message";
+            return m.notifyMediator(this, "error");
         }
 
         model.addAttribute("title", "Roles");
         model.addAttribute("roles", roleDao.findAll());
         model.addAttribute("userId", userId);
 
-        return "role/list";
+        return m.notifyMediator(this, "listRoles");
     }
 
     @RequestMapping(value = "view/{userId}/{roleId}", method = RequestMethod.GET)
@@ -85,7 +86,7 @@ public class RoleController {
             model.addAttribute("messages", "You do not have permission to perform that action!");
             model.addAttribute("userId", userId);
 
-            return "message";
+            return m.notifyMediator(this, "error");
         }
 
         Role role = null;
@@ -100,7 +101,7 @@ public class RoleController {
         model.addAttribute("userId", userId);
         model.addAttribute("roleId", roleId);
 
-        return "role/view";
+        return m.notifyMediator(this, "viewRoleRights");
     }
 
     @RequestMapping(value = "add-right/{userId}/{roleId}", method = RequestMethod.GET)
@@ -124,7 +125,7 @@ public class RoleController {
             model.addAttribute("messages", "You do not have permission to perform that action!");
             model.addAttribute("userId", userId);
 
-            return "message";
+            return m.notifyMediator(this, "error");
         }
 
         Role role = null;
@@ -141,46 +142,7 @@ public class RoleController {
         model.addAttribute("userId", userId);
         model.addAttribute("roleId", roleId);
 
-        return "role/add-right";
-    }
-
-    @RequestMapping(value = "add-right/{userId}/{roleId}", method = RequestMethod.POST)
-    public String processAddRightForm(Model model, @ModelAttribute @Valid AddRoleRightForm form, Errors errors, @PathVariable int userId){
-
-        if(errors.hasErrors()){
-
-            model.addAttribute("title", "Add Rights");
-
-            return "role/add-rights";
-        }
-
-        Rights newRight = null;
-        Optional<Rights> optionalRights = rightsDao.findById(form.getRightId());
-        if(optionalRights.isPresent()){
-
-            newRight = optionalRights.get();
-        }
-
-        Role myRole = null;
-        Optional<Role> optionalRole = roleDao.findById(form.getRoleId());
-        if(optionalRole.isPresent()){
-
-            myRole = optionalRole.get();
-        }
-
-        if(myRole.getRights().contains(newRight)){
-
-            model.addAttribute("title", "Add Right");
-            model.addAttribute("messages", "This role already has that right!");
-            model.addAttribute("userId", userId);
-
-            return "message";
-        }
-
-        myRole.addRight(newRight);
-        roleDao.save(myRole);
-
-        return "redirect:/role/view/" + userId + "/" + myRole.getId();
+        return m.notifyMediator(this, "addRight");
     }
 
     @RequestMapping(value = "remove-right/{userId}/{roleId}", method = RequestMethod.GET)
@@ -204,7 +166,7 @@ public class RoleController {
             model.addAttribute("messages", "You do not have permission to perform that action!");
             model.addAttribute("userId", userId);
 
-            return "message";
+            return m.notifyMediator(this, "error");
         }
 
         Role role = null;
@@ -221,36 +183,6 @@ public class RoleController {
         model.addAttribute("userId", userId);
         model.addAttribute("roleId", roleId);
 
-        return "role/remove-right";
-    }
-
-    @RequestMapping(value = "remove-right/{userId}/{roleId}", method = RequestMethod.POST)
-    public String processRemoveRightForm(Model model, @ModelAttribute @Valid AddRoleRightForm form, Errors errors, @PathVariable int userId){
-
-        if(errors.hasErrors()){
-
-            model.addAttribute("title", "Remove Rights");
-
-            return "role/remove-rights";
-        }
-
-        Rights rightToRemove = null;
-        Optional<Rights> optionalRights = rightsDao.findById(form.getRightId());
-        if(optionalRights.isPresent()){
-
-            rightToRemove = optionalRights.get();
-        }
-
-        Role myRole = null;
-        Optional<Role> optionalRole = roleDao.findById(form.getRoleId());
-        if(optionalRole.isPresent()){
-
-            myRole = optionalRole.get();
-        }
-
-        myRole.removeRight(rightToRemove);
-        roleDao.save(myRole);
-
-        return "redirect:/role/view/" + userId + "/" + myRole.getId();
+        return m.notifyMediator(this, "removeRight");
     }
 }
