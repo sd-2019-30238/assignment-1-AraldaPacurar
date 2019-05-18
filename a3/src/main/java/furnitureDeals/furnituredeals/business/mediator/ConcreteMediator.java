@@ -1,11 +1,36 @@
 package furnitureDeals.furnituredeals.business.mediator;
 
+import furnitureDeals.furnituredeals.queries.*;
 import furnitureDeals.furnituredeals.readM.*;
 import furnitureDeals.furnituredeals.writeM.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+
 public class ConcreteMediator implements Mediator {
 
+    HashMap<Type, Type> handlerMap = new HashMap<Type, Type>() {{
+        put(ReadAllFurniture.class, ReadAllFurnitureHandler.class);
+        put(AddFurniture.class, AddFurnitureHandler.class);
+        put(RemoveFurniture.class, RemoveFurnitureHandler.class);
+        put(AddDiscount.class, AddDiscountHandler.class);
+    }};
+
+    public void handle(Object request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        Type requestType = request.getClass();
+        Type handlerType = handlerMap.get(requestType);
+        Class<?> handlerClass = Class.forName(handlerType.getTypeName());
+        Constructor<?> handlerConstructor = handlerClass.getConstructor();
+        QueryHandler<Object> handler = (QueryHandler<Object>) handlerConstructor.newInstance();
+        handler.handle(request);
+    }
+
     public String notifyMediator(Object component, String event){
+
+
 
         if(event.equals("error")){
             return reactOnError();
