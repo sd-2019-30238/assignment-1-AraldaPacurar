@@ -1,6 +1,8 @@
 package furnitureDeals.furnituredeals.business.mediator;
 
 import furnitureDeals.furnituredeals.queries.*;
+import furnitureDeals.furnituredeals.queries.furniture.*;
+import furnitureDeals.furnituredeals.queries.orders.*;
 import furnitureDeals.furnituredeals.readM.*;
 import furnitureDeals.furnituredeals.writeM.*;
 
@@ -20,6 +22,13 @@ public class ConcreteMediator implements Mediator {
         put(ProcessAddFurniture.class, ProcessAddFurnitureHandler.class);
         put(ProcessRemoveFurniture.class, ProcessRemoveFurnitureHandler.class);
         put(ProcessAddDiscount.class, ProcessAddDiscountHandler.class);
+        put(ListOrders.class, ListOrdersHandler.class);
+        put(ListMyOrders.class, ListMyOrdersHandler.class);
+        put(AddOrder.class, AddOrderHandler.class);
+        put(RemoveOrder.class, RemoveOrderHandler.class);
+        put(ProcessListMyOrders.class, ProcessListMyOrdersHandler.class);
+        put(ProcessAddOrder.class, ProcessAddOrderHandler.class);
+        put(ProcessRemoveOrder.class, ProcessRemoveOrderHandler.class);
     }};
 
     public void handle(Object request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -40,10 +49,7 @@ public class ConcreteMediator implements Mediator {
             return reactOnError();
         }
 
-        if(component.getClass().equals(new OrdersControllerGet().getClass()) || component.getClass().equals(new OrdersControllerPost().getClass())){
-            return reactOnOrdersController(event);
-        }
-        else if(component.getClass().equals(new RoleControllerGet().getClass()) || component.getClass().equals(new RoleControllerPost().getClass())){
+        if(component.getClass().equals(new RoleControllerGet().getClass()) || component.getClass().equals(new RoleControllerPost().getClass())){
             return reactOnRoleController(event);
         }
         else if(component.getClass().equals(new ShoppingCartControllerGet().getClass()) || component.getClass().equals(new ShoppingCartControllerPost().getClass())){
@@ -58,32 +64,6 @@ public class ConcreteMediator implements Mediator {
     private String reactOnError(){
 
         return "message";
-    }
-
-    private String reactOnOrdersController(String event){
-
-        if(event.equals("listOrder")){
-            return "order/list";
-        }
-        else if(event.equals("listHistory")){
-            return "order/history";
-        }
-        else if(event.equals("addOrder")){
-            return "order/add";
-        }
-        else if(event.equals("removeOrder")){
-            return "order/remove";
-        }
-        else if(event.equals("processListHistory")){
-            return "redirect:/order/history/";
-        }
-        else if(event.equals("processAddOrder")){
-            return "message";
-        }
-        else if(event.equals("processRemoveOrder")){
-            return "redirect:/order/list/";
-        }
-        return "";
     }
 
     private String reactOnRoleController(String event){

@@ -3,16 +3,16 @@ package furnitureDeals.furnituredeals.readM;
 import furnitureDeals.furnituredeals.business.mediator.ConcreteMediator;
 import furnitureDeals.furnituredeals.business.mediator.Mediator;
 import furnitureDeals.furnituredeals.dao.*;
-import furnitureDeals.furnituredeals.model.*;
-import furnitureDeals.furnituredeals.model.forms.FeedbackForm;
+import furnitureDeals.furnituredeals.queries.orders.AddOrder;
+import furnitureDeals.furnituredeals.queries.orders.ListMyOrders;
+import furnitureDeals.furnituredeals.queries.orders.ListOrders;
+import furnitureDeals.furnituredeals.queries.orders.RemoveOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.lang.reflect.InvocationTargetException;
 
 @Controller
 @RequestMapping("order")
@@ -39,115 +39,34 @@ public class OrdersControllerGet {
     private Mediator m = new ConcreteMediator();
 
     @RequestMapping(value = "list/{userId}", method =  RequestMethod.GET)
-    public String listOrders(Model model, @PathVariable int userId){
+    public String listOrders(Model model, @PathVariable int userId) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
-        Role myRole = null;
-        User user = null;
-        Optional<User> optionalUser = userDao.findById(userId);
-        if(optionalUser.isPresent()){
-
-            user = optionalUser.get();
-            myRole = user.getRole();
-        }
-
-        List<Rights> rights = rightsDao.findByMyRight("view orders");
-        Rights requiredRight = rights.get(0);
-
-        if(!myRole.getRights().contains(requiredRight)){
-
-            model.addAttribute("title", "Invalid request!");
-            model.addAttribute("messages", "You do not have privileges to perform this action!");
-            model.addAttribute("userId", userId);
-
-            return m.notifyMediator(this, "error");
-        }
-
-        model.addAttribute("title", "Pending Orders");
-        model.addAttribute("orders", ordersDao.findAll());
-        model.addAttribute("userId", userId);
-
-        return m.notifyMediator(this, "listOrder");
+        ListOrders query = new ListOrders(userId, model, userDao, rightsDao, ordersDao);
+        m.handle(query);
+        return "order/list";
     }
 
     @RequestMapping(value = "history/{userId}", method = RequestMethod.GET)
-    public String listMyOrders(Model model, @PathVariable int userId){
+    public String listMyOrders(Model model, @PathVariable int userId) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
-        model.addAttribute("title", "Order History");
-        model.addAttribute("orders", ordersDao.findByUserId(userId));
-        model.addAttribute("userId", userId);
-        model.addAttribute(new FeedbackForm());
-
-        return m.notifyMediator(this, "listHistory");
+        ListMyOrders query = new ListMyOrders(userId, model, ordersDao);
+        m.handle(query);
+        return "order/history";
     }
 
     @RequestMapping(value = "add/{userId}", method  = RequestMethod.GET)
-    public String displayAddOrder(Model model, @PathVariable int userId){
+    public String displayAddOrder(Model model, @PathVariable int userId) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
-        Role myRole = null;
-        User user = null;
-        Optional<User> optionalUser = userDao.findById(userId);
-        if(optionalUser.isPresent()){
-
-            user = optionalUser.get();
-            myRole = user.getRole();
-        }
-
-        List<Rights> rights = rightsDao.findByMyRight("order");
-        Rights requiredRight = rights.get(0);
-
-        if(!myRole.getRights().contains(requiredRight)){
-
-            model.addAttribute("title", "Invalid request!");
-            model.addAttribute("messages", "You do not have privileges to perform this action!");
-            model.addAttribute("userId", userId);
-
-            return m.notifyMediator(this, "listOrder");
-        }
-
-        model.addAttribute("title", "Order Furniture");
-        model.addAttribute("furnitures", furnitureDao.findAll());
-        model.addAttribute("userId", userId);
-
-        return m.notifyMediator(this, "addOrder");
+        AddOrder query = new AddOrder(userId, model, userDao, rightsDao, furnitureDao);
+        m.handle(query);
+        return "order/add";
     }
 
     @RequestMapping(value = "remove/{userId}", method = RequestMethod.GET)
-    public String displayRemoveOrder(Model model, @PathVariable int userId){
+    public String displayRemoveOrder(Model model, @PathVariable int userId) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
-        Role myRole = null;
-        User user = null;
-        Optional<User> optionalUser = userDao.findById(userId);
-        if(optionalUser.isPresent()){
-
-            user = optionalUser.get();
-            myRole = user.getRole();
-        }
-
-        List<Rights> rights = rightsDao.findByMyRight("send order");
-        Rights requiredRight = rights.get(0);
-
-        if(!myRole.getRights().contains(requiredRight)){
-
-            model.addAttribute("title", "Invalid request!");
-            model.addAttribute("messages", "You do not have privileges to perform this action!");
-            model.addAttribute("userId", userId);
-
-            return m.notifyMediator(this, "error");
-        }
-
-        List<Orders> allORders = new ArrayList<>();
-        List<Orders> ordersToDisplay = new ArrayList<>();
-
-        for(Orders order : ordersDao.findAll()){
-            if(!order.getStatus().equals("Payed")){
-                ordersToDisplay.add(order);
-            }
-        }
-
-        model.addAttribute("title", "Process Orders");
-        model.addAttribute("orders", ordersToDisplay);
-        model.addAttribute("userId", userId);
-
-        return m.notifyMediator(this, "removeOrder");
+        RemoveOrder query = new RemoveOrder(userId, model, userDao, rightsDao, ordersDao);
+        m.handle(query);
+        return "order/remove";
     }
 }
