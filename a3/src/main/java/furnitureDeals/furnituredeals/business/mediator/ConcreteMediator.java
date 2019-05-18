@@ -40,6 +40,7 @@ public class ConcreteMediator implements Mediator {
         put(ListItems.class, ListItemsHandler.class);
         put(SendOrder.class, SendOrderHandler.class);
         put(RemoveItem.class, RemoveItemHandler.class);
+        put(ProcessListItems.class, ProcessListItemsHandler.class);
         put(ProcessSendOrder.class, ProcessSendOrderHandler.class);
         put(ProcessRemoveItems.class, ProcessRemoveItemsHandler.class);
 
