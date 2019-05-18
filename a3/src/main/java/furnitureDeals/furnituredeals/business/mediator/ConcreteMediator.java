@@ -5,6 +5,7 @@ import furnitureDeals.furnituredeals.queries.furniture.*;
 import furnitureDeals.furnituredeals.queries.orders.*;
 import furnitureDeals.furnituredeals.queries.role.*;
 import furnitureDeals.furnituredeals.queries.shoppingCart.*;
+import furnitureDeals.furnituredeals.queries.user.*;
 import furnitureDeals.furnituredeals.readM.*;
 import furnitureDeals.furnituredeals.writeM.*;
 
@@ -43,7 +44,16 @@ public class ConcreteMediator implements Mediator {
         put(ProcessListItems.class, ProcessListItemsHandler.class);
         put(ProcessSendOrder.class, ProcessSendOrderHandler.class);
         put(ProcessRemoveItems.class, ProcessRemoveItemsHandler.class);
-
+        put(DisplayAuthenticationForm.class, DisplayAuthenticationFormHandler.class);
+        put(DisplayRegisterForm.class, DisplayRegisterFormHandler.class);
+        put(ListUsers.class, ListUsersHandler.class);
+        put(ListNotifications.class, ListNotificationsHandler.class);
+        put(RemoveUser.class, RemoveUserHandler.class);
+        put(HireEmployee.class, HireEmployeeHandler.class);
+        put(ProcessAuthentication.class, ProcessAuthenticationHandler.class);
+        put(ProcessRegistration.class, ProcessRegistrationHandler.class);
+        put(ProcessRemoveUser.class, ProcessRemoveUserHandler.class);
+        put(ProcessHireEmployee.class, ProcessHireEmployeeHandler.class);
     }};
 
     public void handle(Object request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -54,59 +64,5 @@ public class ConcreteMediator implements Mediator {
         Constructor<?> handlerConstructor = handlerClass.getConstructor();
         QueryHandler<Object> handler = (QueryHandler<Object>) handlerConstructor.newInstance();
         handler.handle(request);
-    }
-
-    public String notifyMediator(Object component, String event){
-
-
-
-        if(event.equals("error")){
-            return reactOnError();
-        }
-
-        if(component.getClass().equals(new UserControllerGet().getClass()) || component.getClass().equals(new UserControllerPost().getClass())){
-            return reactOnUserController(event);
-        }
-        return "";
-    }
-
-    private String reactOnError(){
-
-        return "message";
-    }
-
-    private String reactOnUserController(String event){
-
-        if(event.equals("userAuthentication")){
-            return "user/authentication";
-        }
-        else if(event.equals("userRegistration")){
-            return "user/registration";
-        }
-        else if(event.equals("listUsers")){
-            return "user/list";
-        }
-        else if(event.equals("listNotifications")){
-            return "user/listNotifications";
-        }
-        else if(event.equals("removeUser")){
-            return "user/remove";
-        }
-        else if(event.equals("hireUser")){
-            return "user/hire";
-        }
-        else if(event.equals("userMessage")){
-            return "user/message";
-        }
-        else if(event.equals("processUserAuthentication")){
-            return "user/menu";
-        }
-        else if(event.equals("processRegistration")){
-            return "user/registration";
-        }
-        else if(event.equals("processRemoveUser")){
-            return "redirect:/user/list/";
-        }
-        return "";
     }
 }
