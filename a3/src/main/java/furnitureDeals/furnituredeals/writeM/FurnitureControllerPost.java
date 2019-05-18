@@ -7,6 +7,10 @@ import furnitureDeals.furnituredeals.business.mediator.Mediator;
 import furnitureDeals.furnituredeals.dao.*;
 import furnitureDeals.furnituredeals.model.*;
 import furnitureDeals.furnituredeals.model.forms.FilterForm;
+import furnitureDeals.furnituredeals.queries.ProcessAddDiscount;
+import furnitureDeals.furnituredeals.queries.ProcessAddFurniture;
+import furnitureDeals.furnituredeals.queries.ProcessReadAllFurniture;
+import furnitureDeals.furnituredeals.queries.ProcessRemoveFurniture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,8 +18,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 @Controller
@@ -40,8 +43,12 @@ public class FurnitureControllerPost {
     private Mediator m = new ConcreteMediator();
 
     @RequestMapping(value = "list/{userId}", method = RequestMethod.POST)
-    public String processListFurniture(Model model, @PathVariable int userId, @ModelAttribute @Valid FilterForm filter){
+    public String processListFurniture(Model model, @PathVariable int userId, @ModelAttribute @Valid FilterForm filter) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
+        ProcessReadAllFurniture query = new ProcessReadAllFurniture(userId, model, filter, furnitureDao, furnitureTypeDao);
+        m.handle(query);
+
+        /*
         List<Furniture> filteredFurniture = new ArrayList<>();
         filteredFurniture = furnitureDao.findByName(filter.getFilter());
 
@@ -74,13 +81,18 @@ public class FurnitureControllerPost {
         model.addAttribute("userId", userId);
         model.addAttribute("furnitures", filteredFurniture);
         model.addAttribute(new FilterForm());
+        */
 
-        return m.notifyMediator(this, "listFurniture");
+        return "furniture/list";
     }
 
     @RequestMapping(value = "add/{userId}", method = RequestMethod.POST)
-    public String processAddFurniture(@ModelAttribute @Valid Furniture newFurniture, Errors errors, @PathVariable int userId, Model model){
+    public String processAddFurniture(@ModelAttribute @Valid Furniture newFurniture, Errors errors, @PathVariable int userId, Model model) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
+        ProcessAddFurniture query = new ProcessAddFurniture(userId, model, errors, newFurniture, furnitureDao);
+        m.handle(query);
+
+        /*
         if(errors.hasErrors()){
 
             model.addAttribute("title", "Add Furniture");
@@ -90,24 +102,34 @@ public class FurnitureControllerPost {
         newFurniture.setOriginalPrice(newFurniture.getPrice());
 
         furnitureDao.save(newFurniture);
+        */
 
-        return m.notifyMediator(this, "processAddFurniture") + userId;
+        return "redirect:/furniture/list/" + userId;
     }
 
     @RequestMapping(value = "remove/{userId}", method = RequestMethod.POST)
-    public String processRemoveFurniture(@RequestParam int[] furnitureIds, @PathVariable int userId){
+    public String processRemoveFurniture(@RequestParam int[] furnitureIds, @PathVariable int userId) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
+        ProcessRemoveFurniture query = new ProcessRemoveFurniture(furnitureIds, furnitureDao);
+        m.handle(query);
+
+        /*
         for(int furnitureId : furnitureIds){
 
             furnitureDao.deleteById(furnitureId);
         }
+        */
 
-        return m.notifyMediator(this, "processRemoveFurniture") + userId;
+        return "redirect:/furniture/list/" + userId;
     }
 
     @RequestMapping(value = "discount/{userId}", method = RequestMethod.POST)
-    public String processAddDiscount(@RequestParam int[] furnitureIds, @RequestParam String action, @RequestParam String discount, @PathVariable int userId){
+    public String processAddDiscount(@RequestParam int[] furnitureIds, @RequestParam String action, @RequestParam String discount, @PathVariable int userId) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
+        ProcessAddDiscount query = new ProcessAddDiscount(furnitureIds, discount, action, furnitureDao);
+        m.handle(query);
+
+        /*
         for(int furnitureId: furnitureIds){
 
             Optional<Furniture> optionalFurniture = furnitureDao.findById(furnitureId);
@@ -131,7 +153,8 @@ public class FurnitureControllerPost {
 
             furnitureDao.save(furniture);
         }
+        */
 
-        return m.notifyMediator(this, "processAddDiscount") + userId;
+        return "redirect:/furniture/list/" + userId;
     }
 }

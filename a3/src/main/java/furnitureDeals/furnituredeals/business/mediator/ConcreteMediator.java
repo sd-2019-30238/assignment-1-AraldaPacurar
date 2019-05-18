@@ -16,6 +16,10 @@ public class ConcreteMediator implements Mediator {
         put(AddFurniture.class, AddFurnitureHandler.class);
         put(RemoveFurniture.class, RemoveFurnitureHandler.class);
         put(AddDiscount.class, AddDiscountHandler.class);
+        put(ProcessReadAllFurniture.class, ProcessReadAllFurnitureHandler.class);
+        put(ProcessAddFurniture.class, ProcessAddFurnitureHandler.class);
+        put(ProcessRemoveFurniture.class, ProcessRemoveFurnitureHandler.class);
+        put(ProcessAddDiscount.class, ProcessAddDiscountHandler.class);
     }};
 
     public void handle(Object request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -36,10 +40,7 @@ public class ConcreteMediator implements Mediator {
             return reactOnError();
         }
 
-        if(component.getClass().equals(new FurnitureControllerGet().getClass()) || component.getClass().equals(new FurnitureControllerPost().getClass())){
-            return reactOnFurnitureController(event);
-        }
-        else if(component.getClass().equals(new OrdersControllerGet().getClass()) || component.getClass().equals(new OrdersControllerPost().getClass())){
+        if(component.getClass().equals(new OrdersControllerGet().getClass()) || component.getClass().equals(new OrdersControllerPost().getClass())){
             return reactOnOrdersController(event);
         }
         else if(component.getClass().equals(new RoleControllerGet().getClass()) || component.getClass().equals(new RoleControllerPost().getClass())){
@@ -57,32 +58,6 @@ public class ConcreteMediator implements Mediator {
     private String reactOnError(){
 
         return "message";
-    }
-
-    private String reactOnFurnitureController(String event){
-
-        if(event.equals("listFurniture")){
-            return "furniture/list";
-        }
-        else if(event.equals("addFurniture")){
-            return "furniture/add";
-        }
-        else if(event.equals("removeFurniture")){
-            return "furniture/remove";
-        }
-        else if(event.equals("addDiscount")){
-            return "furniture/discount";
-        }
-        else if(event.equals("processAddFurniture")){
-            return "redirect:/furniture/list/";
-        }
-        else if(event.equals("processRemoveFurniture")){
-            return "redirect:/furniture/list/";
-        }
-        else if(event.equals("processAddDiscount")){
-            return "redirect:/furniture/list/";
-        }
-        return "";
     }
 
     private String reactOnOrdersController(String event){
