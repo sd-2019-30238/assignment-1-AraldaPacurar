@@ -4,6 +4,7 @@ import furnitureDeals.furnituredeals.queries.*;
 import furnitureDeals.furnituredeals.queries.furniture.*;
 import furnitureDeals.furnituredeals.queries.orders.*;
 import furnitureDeals.furnituredeals.queries.role.*;
+import furnitureDeals.furnituredeals.queries.shoppingCart.*;
 import furnitureDeals.furnituredeals.readM.*;
 import furnitureDeals.furnituredeals.writeM.*;
 
@@ -36,6 +37,12 @@ public class ConcreteMediator implements Mediator {
         put(RemoveRight.class, RemoveRightHandler.class);
         put(ProcessAddRight.class, ProcessAddRightHandler.class);
         put(ProcessRemoveRight.class, ProcessRemoveRightHandler.class);
+        put(ListItems.class, ListItemsHandler.class);
+        put(SendOrder.class, SendOrderHandler.class);
+        put(RemoveItem.class, RemoveItemHandler.class);
+        put(ProcessSendOrder.class, ProcessSendOrderHandler.class);
+        put(ProcessRemoveItems.class, ProcessRemoveItemsHandler.class);
+
     }};
 
     public void handle(Object request) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -56,10 +63,7 @@ public class ConcreteMediator implements Mediator {
             return reactOnError();
         }
 
-        if(component.getClass().equals(new ShoppingCartControllerGet().getClass()) || component.getClass().equals(new ShoppingCartControllerPost().getClass())){
-            return reactOnShoppingCartController(event);
-        }
-        else if(component.getClass().equals(new UserControllerGet().getClass()) || component.getClass().equals(new UserControllerPost().getClass())){
+        if(component.getClass().equals(new UserControllerGet().getClass()) || component.getClass().equals(new UserControllerPost().getClass())){
             return reactOnUserController(event);
         }
         return "";
@@ -68,26 +72,6 @@ public class ConcreteMediator implements Mediator {
     private String reactOnError(){
 
         return "message";
-    }
-
-    private String reactOnShoppingCartController(String event){
-
-        if(event.equals("listCart")){
-            return "cart/list";
-        }
-        else if(event.equals("addToCart")){
-            return "cart/add";
-        }
-        else if(event.equals("removeFromCart")){
-            return "cart/remove";
-        }
-        else if(event.equals("processAddOrder")){
-            return "message";
-        }
-        else if(event.equals("processRemoveFromCart")){
-            return "message";
-        }
-        return "";
     }
 
     private String reactOnUserController(String event){
