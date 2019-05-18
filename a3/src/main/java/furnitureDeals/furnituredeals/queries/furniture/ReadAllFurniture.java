@@ -1,31 +1,31 @@
-package furnitureDeals.furnituredeals.queries;
+package furnitureDeals.furnituredeals.queries.furniture;
 
-import furnitureDeals.furnituredeals.dao.FurnitureTypeDAO;
+import furnitureDeals.furnituredeals.dao.FurnitureDAO;
 import furnitureDeals.furnituredeals.dao.RightsDAO;
 import furnitureDeals.furnituredeals.dao.UserDAO;
 import org.springframework.ui.Model;
 
-public class AddFurniture {
+public class ReadAllFurniture {
 
     private int userId;
     private Model model;
     private UserDAO userDao;
     private RightsDAO rightsDao;
-    private FurnitureTypeDAO furnitureTypeDAO;
+    private FurnitureDAO furnitureDao;
 
-    public AddFurniture(int userId, Model model, UserDAO userDao, RightsDAO rightsDao, FurnitureTypeDAO furnitureTypeDAO) {
+    public ReadAllFurniture(int userId, Model model, UserDAO userDao, RightsDAO rightsDao, FurnitureDAO furnitureDao){
         this.userId = userId;
         this.model = model;
         this.userDao = userDao;
         this.rightsDao = rightsDao;
-        this.furnitureTypeDAO = furnitureTypeDAO;
+        this.furnitureDao = furnitureDao;
     }
 
-    public int getUserId() {
+    public int getUserId(){
         return userId;
     }
 
-    public Model getModel() {
+    public Model getModel(){
         return model;
     }
 
@@ -37,7 +37,7 @@ public class AddFurniture {
         return rightsDao;
     }
 
-    public FurnitureTypeDAO getFurnitureTypeDAO() {
-        return furnitureTypeDAO;
+    public FurnitureDAO getFurnitureDao() {
+        return furnitureDao;
     }
 }

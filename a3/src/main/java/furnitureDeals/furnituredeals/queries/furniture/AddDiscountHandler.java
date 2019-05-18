@@ -1,4 +1,4 @@
-package furnitureDeals.furnituredeals.queries;
+package furnitureDeals.furnituredeals.queries.furniture;
 
 import furnitureDeals.furnituredeals.dao.FurnitureDAO;
 import furnitureDeals.furnituredeals.dao.RightsDAO;
@@ -6,27 +6,25 @@ import furnitureDeals.furnituredeals.dao.UserDAO;
 import furnitureDeals.furnituredeals.model.Rights;
 import furnitureDeals.furnituredeals.model.Role;
 import furnitureDeals.furnituredeals.model.User;
-import furnitureDeals.furnituredeals.model.forms.FilterForm;
+import furnitureDeals.furnituredeals.queries.QueryHandler;
 import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Optional;
 
+public class AddDiscountHandler implements QueryHandler<AddDiscount> {
 
-public class ReadAllFurnitureHandler implements QueryHandler<ReadAllFurniture> {
+    @Override
+    public void handle(AddDiscount request) {
 
-
-    public void handle(ReadAllFurniture request){
-
-        Model model = request.getModel();
         int userId = request.getUserId();
+        Model model = request.getModel();
         UserDAO userDao = request.getUserDao();
         RightsDAO rightsDao = request.getRightsDao();
         FurnitureDAO furnitureDao = request.getFurnitureDao();
 
         Role myRole = null;
         User user = null;
-
         Optional<User> optionalUser = userDao.findById(userId);
         if(optionalUser.isPresent()){
 
@@ -34,7 +32,7 @@ public class ReadAllFurnitureHandler implements QueryHandler<ReadAllFurniture> {
             myRole = user.getRole();
         }
 
-        List<Rights> rights = rightsDao.findByMyRight("view furniture");
+        List<Rights> rights = rightsDao.findByMyRight("manage discounts");
         Rights requiredRight = rights.get(0);
 
         if(!myRole.getRights().contains(requiredRight)){
@@ -46,10 +44,8 @@ public class ReadAllFurnitureHandler implements QueryHandler<ReadAllFurniture> {
             return;
         }
 
-        model.addAttribute("title", "Available Furniture");
-        model.addAttribute("userId", userId);
+        model.addAttribute("title", "Manage Discounts");
         model.addAttribute("furnitures", furnitureDao.findAll());
-        model.addAttribute(new FilterForm());
-
+        model.addAttribute("userId", userId);
     }
 }

@@ -1,7 +1,8 @@
-package furnitureDeals.furnituredeals.queries;
+package furnitureDeals.furnituredeals.queries.furniture;
 
 import furnitureDeals.furnituredeals.dao.FurnitureDAO;
 import furnitureDeals.furnituredeals.model.Furniture;
+import furnitureDeals.furnituredeals.queries.QueryHandler;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 

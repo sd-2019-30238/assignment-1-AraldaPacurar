@@ -1,11 +1,11 @@
-package furnitureDeals.furnituredeals.queries;
+package furnitureDeals.furnituredeals.queries.furniture;
 
 import furnitureDeals.furnituredeals.dao.FurnitureDAO;
 import furnitureDeals.furnituredeals.dao.RightsDAO;
 import furnitureDeals.furnituredeals.dao.UserDAO;
 import org.springframework.ui.Model;
 
-public class AddDiscount {
+public class RemoveFurniture {
 
     private int userId;
     private Model model;
@@ -13,7 +13,7 @@ public class AddDiscount {
     private RightsDAO rightsDao;
     private FurnitureDAO furnitureDao;
 
-    public AddDiscount(int userId, Model model, UserDAO userDao, RightsDAO rightsDao, FurnitureDAO furnitureDao) {
+    public RemoveFurniture(int userId, Model model, UserDAO userDao, RightsDAO rightsDao, FurnitureDAO furnitureDao) {
         this.userId = userId;
         this.model = model;
         this.userDao = userDao;

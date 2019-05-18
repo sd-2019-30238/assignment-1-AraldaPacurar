@@ -1,9 +1,10 @@
-package furnitureDeals.furnituredeals.queries;
+package furnitureDeals.furnituredeals.queries.furniture;
 
 import furnitureDeals.furnituredeals.business.factory.Discount;
 import furnitureDeals.furnituredeals.business.factory.DiscountCreator;
 import furnitureDeals.furnituredeals.dao.FurnitureDAO;
 import furnitureDeals.furnituredeals.model.Furniture;
+import furnitureDeals.furnituredeals.queries.QueryHandler;
 
 import java.util.Optional;
 

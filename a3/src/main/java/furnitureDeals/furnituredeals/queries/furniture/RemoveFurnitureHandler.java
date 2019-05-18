@@ -1,27 +1,27 @@
-package furnitureDeals.furnituredeals.queries;
+package furnitureDeals.furnituredeals.queries.furniture;
 
-import furnitureDeals.furnituredeals.dao.FurnitureTypeDAO;
+import furnitureDeals.furnituredeals.dao.FurnitureDAO;
 import furnitureDeals.furnituredeals.dao.RightsDAO;
 import furnitureDeals.furnituredeals.dao.UserDAO;
-import furnitureDeals.furnituredeals.model.Furniture;
 import furnitureDeals.furnituredeals.model.Rights;
 import furnitureDeals.furnituredeals.model.Role;
 import furnitureDeals.furnituredeals.model.User;
+import furnitureDeals.furnituredeals.queries.QueryHandler;
 import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Optional;
 
-public class AddFurnitureHandler implements QueryHandler<AddFurniture> {
+public class RemoveFurnitureHandler implements QueryHandler<RemoveFurniture> {
 
     @Override
-    public void handle(AddFurniture request) {
+    public void handle(RemoveFurniture request) {
 
-        Model model = request.getModel();
         int userId = request.getUserId();
+        Model model = request.getModel();
         UserDAO userDao = request.getUserDao();
         RightsDAO rightsDao = request.getRightsDao();
-        FurnitureTypeDAO furnitureTypeDao = request.getFurnitureTypeDAO();
+        FurnitureDAO furnitureDao = request.getFurnitureDao();
 
         Role myRole = null;
         User user = null;
@@ -32,22 +32,20 @@ public class AddFurnitureHandler implements QueryHandler<AddFurniture> {
             myRole = user.getRole();
         }
 
-        List<Rights> rights = rightsDao.findByMyRight("add furniture");
+        List<Rights> rights = rightsDao.findByMyRight("remove furniture");
         Rights requiredRight = rights.get(0);
 
         if(!myRole.getRights().contains(requiredRight)){
 
-
             model.addAttribute("title", "Invalid request!");
-            model.addAttribute("messages", "You do not have privileges to perform this operation!");
+            model.addAttribute("messages", "You do not have privileges to perform this action!");
             model.addAttribute("userId", userId);
 
             return;
         }
 
-        model.addAttribute("title", "Add Furniture");
+        model.addAttribute("title", "Remove Furniture");
         model.addAttribute("userId", userId);
-        model.addAttribute("furnitureTypes", furnitureTypeDao.findAll());
-        model.addAttribute(new Furniture());
+        model.addAttribute("furnitures", furnitureDao.findAll());
     }
 }

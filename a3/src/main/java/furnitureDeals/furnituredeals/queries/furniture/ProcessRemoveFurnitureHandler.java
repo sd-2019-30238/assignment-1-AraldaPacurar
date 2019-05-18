@@ -1,6 +1,7 @@
-package furnitureDeals.furnituredeals.queries;
+package furnitureDeals.furnituredeals.queries.furniture;
 
 import furnitureDeals.furnituredeals.dao.FurnitureDAO;
+import furnitureDeals.furnituredeals.queries.QueryHandler;
 
 public class ProcessRemoveFurnitureHandler implements QueryHandler<ProcessRemoveFurniture> {
 
